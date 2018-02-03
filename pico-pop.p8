@@ -1,8 +1,12 @@
 pico-8 cartridge // http://www.pico-8.com
 version 16
 __lua__
+
+isdebug=1
+
 --gamestates:1=game
 gamestate=1
+gametimercount=10
 
 gridwidth=6
 gridheight=12
@@ -13,6 +17,10 @@ p1gridend=49
 p2gridoffset=79
 p2gridend=127
 gridtop=30
+
+--orientation:1=horizontal,2=vertical
+
+p1currentblockx, p1currentblocky, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,1,0
 
 --picostates:0=none,1=red,2=green,3=blue,4=yellow,5=pink
 picostate1spr=11
@@ -30,8 +38,8 @@ function _init()
 			p2grid[i]={}
 			
 			for j=1,gridheight,1 do
-				p1grid[i][j]=flr(rnd(5))
-				p2grid[i][j]=flr(rnd(5))
+				p1grid[i][j]=0
+				p2grid[i][j]=0
 			end
 		end
 	end
@@ -39,7 +47,39 @@ function _init()
 end
 
 function _update60()
-	--do stuff
+	
+	if gamestate==1 then
+		if p1block1==0 then
+			--get next blocks
+			p1block1=flr(rnd(5))
+			p1block2=flr(rnd(5))
+			p1currentblockx=1
+			p1currentblocky=30
+			p1orientation=1
+			p1timer=0
+		end
+
+		p1timer+=1
+
+		if p1timer%gametimercount==0 then
+			p1currentblocky+=1
+		end
+
+	end
+end
+
+function getsprite(state) 
+	if state==1 then
+		return picostate1spr
+	elseif state==2 then
+		return picostate2spr
+	elseif state==3 then
+		return picostate3spr
+	elseif state==4 then
+		return picostate4spr
+	elseif state==5 then
+		return picostate5spr
+	end
 end
 
 function _draw()
@@ -75,50 +115,44 @@ function _draw()
 
 				local p1griditem=p1grid[i][j]
 
-				if p1griditem==1 then
-					p1spr=picostate1spr
-				elseif p1griditem==2 then
-					p1spr=picostate2spr
-				elseif p1griditem==3 then
-					p1spr=picostate3spr
-				elseif p1griditem==4 then
-					p1spr=picostate4spr
-				elseif p1griditem==5 then
-					p1spr=picostate5spr
-				end
+				p1spr=getsprite(p1griditem);
 
 				local p2griditem=p2grid[i][j]
 
-				if p2griditem==1 then
-					p2spr=picostate1spr
-				elseif p2griditem==2 then
-					p2spr=picostate2spr
-				elseif p2griditem==3 then
-					p2spr=picostate3spr
-				elseif p2griditem==4 then
-					p2spr=picostate4spr
-				elseif p2griditem==5 then
-					p2spr=picostate5spr
-				end
+				p2spr=getsprite(p2griditem);
 
 				spr(p1spr, (((i-1)*8)+p1gridoffset), (gridtop+((j-1)*8)))
 				spr(p2spr, (((i-1)*8)+p2gridoffset), (gridtop+((j-1)*8)))		
 			end
 		end
+
+		local p1s1=getsprite(p1block1)
+		local p1s2=getsprite(p1block2)
+
+		spr(p1s1, p1currentblockx, p1currentblocky)
+		spr(p1s2, p1currentblockx + 8, p1currentblocky)
 	end
 
-	print('mem:'..stat(0).." / ", 0, 0, 13)
-  	print('cpu:'..stat(1).." / ", 55, 0, 13)
-	print('fps:'..stat(7), 105, 0, 13)
+	if isdebug==1 then
+		print('mem:'..stat(0).." / ", 0, 0, 13)
+		print('cpu:'..stat(1).." / ", 55, 0, 13)
+		print('fps:'..stat(7), 105, 0, 13)
+
+		print('b1:'..p1block1.."/", 0, 6, 13)
+		print('b2:'..p1block2.."/", 28, 6, 13)
+		print('o:'..p1orientation.."/", 55, 6, 13)
+		print('x:'..p1currentblockx.."/", 75, 6, 13)
+		print('y:'..p1currentblocky.."/", 100, 6, 13)
+	end
 end
 
 __gfx__
 000000000022ef000022ef000022ef000022ef000022ef000022ef000022ef000022ef000022ef000022ef0000228e0000228e0000228e0000228e0000228e00
 0000000002eeeef002eeeef002eeeef002eeeef002eeeef002eeeef002eeeef002eeeef002eeeef002eeeef0028888e0028888e0028888e0028888e0028888e0
-007007002e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2807078828070788280707882807078828070788
-000770002e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2eeeeeee2877778828777788287777882877778828777788
-000770002e555eee2ee88eee2e555eee2ee5eeee2ee5eeee2ee55eee2e888eee2eeeeeee2ee5eeee2eeeeeee28555888288ee888285558882885888828855888
-007007002ee88eee2ee88eee2eeeeeee2ee5eeee2ee8eeee2ee55eee2e888eee2eeeeeee2eeeeeee2eeeeeee288ee888288ee888288888882885888828855888
+000000002e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2e0707ee2807078828070788280707882807078828070788
+000000002e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2e7777ee2eeeeeee2877778828777788287777882877778828777788
+000000002e555eee2ee88eee2e555eee2ee5eeee2ee5eeee2ee55eee2e888eee2eeeeeee2ee5eeee2eeeeeee28555888288ee888285558882885888828855888
+000000002ee88eee2ee88eee2eeeeeee2ee5eeee2ee8eeee2ee55eee2e888eee2eeeeeee2eeeeeee2eeeeeee288ee888288ee888288888882885888828855888
 0000000002eeeee002eeeee002eeeee002eeeee002eeeee002eeeee002eeeee002eeeee002eeeee002eeeee00288888002888880028888800288888002888880
 000000000022ee000022ee000022ee000022ee000022ee000022ee000022ee000022ee000022ee000022ee000022880000228800002288000022880000228800
 000000000011c6000011c6000011c6000011c6000011c6000011c6000011c6000011c6000011c6000011c60000228e0000228e0000228e0000228e0000000000
