@@ -7,6 +7,7 @@ isdebug=1
 --gamestates:1=game
 gamestate=1
 gametimercount=10
+xbtnspeed=8
 
 gridwidth=6
 gridheight=12
@@ -49,10 +50,15 @@ end
 function _update60()
 	
 	if gamestate==1 then
+
+		if p1timer>32000 then
+			p1timer=0
+		end
+
 		if p1block1==0 then
 			--get next blocks
-			p1block1=flr(rnd(5))
-			p1block2=flr(rnd(5))
+			p1block1=flr(rnd(5))+1
+			p1block2=flr(rnd(5))+1
 			p1currentblockx=1
 			p1currentblocky=30
 			p1orientation=1
@@ -61,8 +67,31 @@ function _update60()
 
 		p1timer+=1
 
+		if btnp(0) then
+			p1currentblockx-=xbtnspeed
+
+			if p1currentblockx < p1gridoffset then
+				p1currentblockx=p1gridoffset
+			end
+
+		elseif btnp(1) then
+			p1currentblockx+=xbtnspeed
+
+			if p1currentblockx > p1gridend-16 then
+				p1currentblockx=p1gridend-16
+			end
+		end
+
+		if btnp(3) then
+			p1currentblocky+=8
+		end
+
 		if p1timer%gametimercount==0 then
 			p1currentblocky+=1
+		end
+
+		if p1currentblocky+8 >= 127 then
+			p1currentblocky=127-8
 		end
 
 	end
