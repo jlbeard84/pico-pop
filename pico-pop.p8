@@ -11,16 +11,20 @@ xbtnspeed=8
 
 gridwidth=6
 gridheight=12
-p1grid={}
-p2grid={}
-p1gridoffset=1
-p1gridend=49
-p2gridoffset=79
-p2gridend=127
 gridtop=30
 
---orientation:1=horizontal,2=vertical
+p1grid={}
+p1gridoffset=1
+p1gridend=49
 
+p2grid={}
+p2gridoffset=79
+p2gridend=127
+
+xgrid=0
+ygrid=0
+
+--orientation:1=horizontal,2=vertical
 p1currentblockx, p1currentblocky, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,1,0
 
 --picostates:0=none,1=red,2=green,3=blue,4=yellow,5=pink
@@ -44,7 +48,25 @@ function _init()
 			end
 		end
 	end
+end
 
+function transgridxpos(p,x)
+	xoffset=p1gridoffset
+
+	if p==2 then
+		xoffset=p2gridoffset
+	end
+
+	xpos=(x-xoffset)/8
+
+	return xpos
+end
+
+function transgridypos(y)
+	yoffset=gridtop
+	ypos=flr((y-yoffset)/8)-1
+
+	return ypos
 end
 
 function _update60()
@@ -94,6 +116,8 @@ function _update60()
 			p1currentblocky=127-8
 		end
 
+		xgrid=transgridxpos(1, p1currentblockx)
+		ygrid=transgridypos(p1currentblocky)
 	end
 end
 
@@ -172,6 +196,9 @@ function _draw()
 		print('o:'..p1orientation.."/", 55, 6, 13)
 		print('x:'..p1currentblockx.."/", 75, 6, 13)
 		print('y:'..p1currentblocky.."/", 100, 6, 13)
+
+		print('xg:'..xgrid.."/", 0, 12, 13)
+		print('yg:'..ygrid.."/", 55, 12, 13)
 	end
 end
 
