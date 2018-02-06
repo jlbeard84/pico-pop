@@ -57,16 +57,28 @@ function transgridxpos(p,x)
 		xoffset=p2gridoffset
 	end
 
-	xpos=(x-xoffset)/8
+	xpos=((x-xoffset)/8)+1
 
 	return xpos
 end
 
 function transgridypos(y)
 	yoffset=gridtop
-	ypos=flr((y-yoffset)/8)-1
+	ypos=flr((y-yoffset)/8)+1
 
 	return ypos
+end
+
+function insertintotable(p,x,y,b1,b2)
+	if p==1 then
+		p1grid[x][y]=b1
+		--fix this based on orientation
+		p1grid[x+1][y]=b2
+	else
+		p2grid[x][y]=b1
+		--fix this based on orientation
+		p2grid[x+1][y]=b2
+	end
 end
 
 function _update60()
@@ -118,6 +130,11 @@ function _update60()
 
 		xgrid=transgridxpos(1, p1currentblockx)
 		ygrid=transgridypos(p1currentblocky)
+
+		if ygrid==gridheight then
+			insertintotable(1, xgrid, ygrid, p1block1, p1block2)
+			p1block1=0
+		end
 	end
 end
 
