@@ -24,8 +24,8 @@ p2gridend=127
 xgrid=0
 ygrid=0
 
---orientation:1=horizontal,2=vertical
-p1currentblockx, p1currentblocky, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,1,0
+--orientation:1=horizontal-12,2=vertical-21,3=horizontal=21,4=vertical-12
+p1block1x, p1block1y, p1block2x, p1block2y, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,0,0,1,0
 
 --picostates:0=none,1=red,2=green,3=blue,4=yellow,5=pink
 picostate1spr=11
@@ -69,15 +69,11 @@ function transgridypos(y)
 	return ypos
 end
 
-function insertintotable(p,x,y,b1,b2)
+function insertintotable(p,x,y,b)
 	if p==1 then
-		p1grid[x][y]=b1
-		--fix this based on orientation
-		p1grid[x+1][y]=b2
+		p1grid[x][y]=b
 	else
-		p2grid[x][y]=b1
-		--fix this based on orientation
-		p2grid[x+1][y]=b2
+		p2grid[x][y]=b
 	end
 end
 
@@ -93,8 +89,10 @@ function _update60()
 			--get next blocks
 			p1block1=flr(rnd(5))+1
 			p1block2=flr(rnd(5))+1
-			p1currentblockx=1
-			p1currentblocky=30
+			p1block1x=1
+			p1block2x=p1block1x+8
+			p1block1y=30
+			p1block2y=30
 			p1orientation=1
 			p1timer=0
 		end
@@ -102,37 +100,70 @@ function _update60()
 		p1timer+=1
 
 		if btnp(0) then
-			p1currentblockx-=xbtnspeed
+			p1block1x-=xbtnspeed
+			p1block2x-=xbtnspeed
 
-			if p1currentblockx < p1gridoffset then
-				p1currentblockx=p1gridoffset
+			if p1orientation == 3 and p1block2x < p1gridoffset then
+				p1block2x=p1gridoffset
+				p1block1x=p1gridoffset+8
+			elseif p1orientation == 1 and p1block1x < p1gridoffset then
+				p1block1x=p1gridoffset
+				p1block2x=p1gridoffset+8
+			elseif p1block1x < p1gridoffset then
+				p1block1x=p1gridoffset
+				p1block2x=p1gridoffset
 			end
 
 		elseif btnp(1) then
-			p1currentblockx+=xbtnspeed
+			p1block1x+=xbtnspeed
+			p1block2x+=xbtnspeed
 
-			if p1currentblockx > p1gridend-16 then
-				p1currentblockx=p1gridend-16
+			if p1block1x > p1gridend-16 then
+				p1block1x=p1gridend-16
+			end
+
+			if p1orientation == 1 and p1block2x > p1gridend-8 then
+				p1block1x=p1gridend-16
+				p1block2x=p1gridend-8
+			elseif p1orientation == 3 and p1block1x > p1gridend-8 then
+				p1block1x=p1gridoffset-8
+				p1block2x=p1gridoffset-16
+			elseif p1block1x > p1gridend-8 then
+				p1block1x=p1gridoffset-8
+				p1block2x=p1gridoffset-8
 			end
 		end
 
 		if btnp(3) then
-			p1currentblocky+=8
+			p1block1y+=8
+			p1block2y+=8
 		end
 
 		if p1timer%gametimercount==0 then
-			p1currentblocky+=1
+			p1block1y+=1
+			p1block2y+=1
 		end
 
-		if p1currentblocky+8 >= 127 then
-			p1currentblocky=127-8
+		if orientation == 2 and p1block1y+8 >= 127 then
+			p1block1y=127-8
+			p1block2y=127-16
+		elseif orientation == 4 and p1block2y+8 >= 127 then
+			p1block1y=127-16
+			p1block2y=127-8
+		elseif p1block1y+8 >= 127 then
+			p1block1y=127-8
+			p1block2y=127-8
 		end
 
-		xgrid=transgridxpos(1, p1currentblockx)
-		ygrid=transgridypos(p1currentblocky)
+		b1xgrid=transgridxpos(1, p1block1x)
+		b1ygrid=transgridypos(p1block1y)
 
-		if ygrid==gridheight then
-			insertintotable(1, xgrid, ygrid, p1block1, p1block2)
+		b2xgrid=transgridxpos(1, p1block2x)
+		b2ygrid=transgridypos(p1block2y)
+
+		if b1ygrid==gridheight or b2ygrid==gridheight then
+			insertintotable(1, b1xgrid, b1ygrid, p1block1)
+			insertintotable(1, b2xgrid, b2ygrid, p1block2)
 			p1block1=0
 		end
 	end
@@ -199,8 +230,8 @@ function _draw()
 		local p1s1=getsprite(p1block1)
 		local p1s2=getsprite(p1block2)
 
-		spr(p1s1, p1currentblockx, p1currentblocky)
-		spr(p1s2, p1currentblockx + 8, p1currentblocky)
+		spr(p1s1, p1block1x, p1block1y)
+		spr(p1s2, p1block2x, p1block2y)
 	end
 
 	if isdebug==1 then
@@ -211,8 +242,8 @@ function _draw()
 		print('b1:'..p1block1.."/", 0, 6, 13)
 		print('b2:'..p1block2.."/", 28, 6, 13)
 		print('o:'..p1orientation.."/", 55, 6, 13)
-		print('x:'..p1currentblockx.."/", 75, 6, 13)
-		print('y:'..p1currentblocky.."/", 100, 6, 13)
+		print('x:'..p1block1x.."/", 75, 6, 13)
+		print('y:'..p1block1y.."/", 100, 6, 13)
 
 		print('xg:'..xgrid.."/", 0, 12, 13)
 		print('yg:'..ygrid.."/", 55, 12, 13)
