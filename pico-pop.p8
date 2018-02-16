@@ -21,8 +21,7 @@ p2grid={}
 p2gridoffset=79
 p2gridend=127
 
-xgrid=0
-ygrid=0
+b1xgrid, b1ygrid, b2xgrid, b2ygrid = 0,0,0,0
 
 --orientation:1=horizontal-12,2=vertical-21,3=horizontal=21,4=vertical-12
 p1block1x, p1block1y, p1block2x, p1block2y, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,0,0,1,0
@@ -283,8 +282,11 @@ function _draw()
 		print('x:'..p1block1x.."/", 75, 6, 13)
 		print('y:'..p1block1y.."/", 100, 6, 13)
 
-		print('xg:'..xgrid.."/", 0, 12, 13)
-		print('yg:'..ygrid.."/", 55, 12, 13)
+		print('x1g:'..b1xgrid.."/", 0, 12, 13)
+		print('y1g:'..b1ygrid.."/", 30, 12, 13)
+
+		print('x2g:'..b2xgrid.."/", 60, 12, 13)
+		print('y2g:'..b2ygrid.."/", 90, 12, 13)
 	end
 end
 
