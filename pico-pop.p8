@@ -109,7 +109,7 @@ function _update60()
 			elseif p1orientation == 1 and p1block1x < p1gridoffset then
 				p1block1x=p1gridoffset
 				p1block2x=p1gridoffset+8
-			elseif p1block1x < p1gridoffset then
+			elseif (p1orientation == 2 or p1orientation==4) and p1block1x < p1gridoffset then
 				p1block1x=p1gridoffset
 				p1block2x=p1gridoffset
 			end
@@ -118,25 +118,39 @@ function _update60()
 			p1block1x+=xbtnspeed
 			p1block2x+=xbtnspeed
 
-			if p1block1x > p1gridend-16 then
-				p1block1x=p1gridend-16
-			end
-
 			if p1orientation == 1 and p1block2x > p1gridend-8 then
 				p1block1x=p1gridend-16
 				p1block2x=p1gridend-8
 			elseif p1orientation == 3 and p1block1x > p1gridend-8 then
-				p1block1x=p1gridoffset-8
-				p1block2x=p1gridoffset-16
-			elseif p1block1x > p1gridend-8 then
-				p1block1x=p1gridoffset-8
-				p1block2x=p1gridoffset-8
+				p1block1x=p1gridend-8
+				p1block2x=p1gridend-16
+			elseif (p1orientation == 2 or p1orientation==4) and p1block1x > p1gridend-8 then
+				p1block1x=p1gridend-8
+				p1block2x=p1gridend-8
 			end
 		end
 
 		if btnp(3) then
 			p1block1y+=8
 			p1block2y+=8
+		end
+
+		if btnp(4) then
+			neworientation=p1orientation-1
+
+			if neworientation < 1 then
+				neworientation=4
+			end
+
+			updateorientation(1, neworientation)
+		elseif btnp(5) then
+			neworientation=p1orientation+1
+
+			if neworientation > 4 then
+				neworientation=1
+			end
+
+			updateorientation(1, neworientation)
 		end
 
 		if p1timer%gametimercount==0 then
@@ -166,6 +180,30 @@ function _update60()
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
 			p1block1=0
 		end
+	end
+end
+
+function updateorientation(p, no)
+	if p==1 then
+		if no==1 and p1block1x + 8 < p1gridend then
+			p1block2x=p1block1x+8
+			p1block2y=p1block1y
+			p1orientation=no
+		elseif no==2 then
+			p1block2x=p1block1x
+			p1block2y=p1block1y-8
+			p1orientation=no
+		elseif no==3 and p1block1x > p1gridoffset then
+			p1block2x=p1block1x-8
+			p1block2y=p1block1y
+			p1orientation=no
+		elseif no==4 and p1block1y + 8 < 127 then
+			p1block2x=p1block1x
+			p1block2y=p1block1y+8
+			p1orientation=no
+		end
+	else
+	--todo, p2
 	end
 end
 
