@@ -174,12 +174,34 @@ function _update60()
 		b2xgrid=transgridxpos(1, p1block2x)
 		b2ygrid=transgridypos(p1block2y)
 
+		hasCollided = false
+
 		if b1ygrid==gridheight or b2ygrid==gridheight then
 			insertintotable(1, b1xgrid, b1ygrid, p1block1)
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
 			p1block1=0
+		elseif collides(b1xgrid,  b1ygrid + 1, 1) or collides(b2xgrid, b2ygrid + 1, 1) then
+			insertintotable(1, b1xgrid, b1ygrid, p1block1)
+			insertintotable(1, b2xgrid, b2ygrid, p1block2)
+			p1block1=0		
 		end
 	end
+end
+
+function collides(xpos, ypos, gridnum)
+	grid = {}
+	
+	if gridnum == 1 then
+		grid = p1grid
+	else
+		grid = p2grid
+	end
+
+	if grid[xpos][ypos] != 0 then
+		return true
+	end
+	
+	return false
 end
 
 function updateorientation(p, no)
