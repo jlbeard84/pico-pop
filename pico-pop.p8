@@ -111,6 +111,9 @@ function _update60()
 			elseif (p1orientation == 2 or p1orientation==4) and p1block1x < p1gridoffset then
 				p1block1x=p1gridoffset
 				p1block2x=p1gridoffset
+			elseif collidesxy(p1block1x, p1block1y, 1) == true or collidesxy(p1block2x, p1block2y, 1) == true then
+				p1block1x+=xbtnspeed
+				p1block2x+=xbtnspeed
 			end
 
 		elseif btnp(1) then
@@ -126,6 +129,9 @@ function _update60()
 			elseif (p1orientation == 2 or p1orientation==4) and p1block1x > p1gridend-8 then
 				p1block1x=p1gridend-8
 				p1block2x=p1gridend-8
+			elseif collidesxy(p1block1x, p1block1y, 1) == true or collidesxy(p1block2x, p1block2y, 1) == true then
+				p1block1x-=xbtnspeed
+				p1block2x-=xbtnspeed
 			end
 		end
 
@@ -183,9 +189,13 @@ function _update60()
 		elseif collides(b1xgrid,  b1ygrid + 1, 1) or collides(b2xgrid, b2ygrid + 1, 1) then
 			insertintotable(1, b1xgrid, b1ygrid, p1block1)
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
-			p1block1=0		
+			p1block1=0
 		end
 	end
+end
+
+function collidesxy(xpos, ypos, gridnum)
+	return collides(transgridxpos(gridnum, xpos), transgridypos(ypos), gridnum)
 end
 
 function collides(xpos, ypos, gridnum)
