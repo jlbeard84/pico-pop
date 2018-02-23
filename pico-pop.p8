@@ -270,16 +270,21 @@ function _draw()
 		for i=1,gridwidth,1 do 		
 
 			local p1gridlinex = (p1gridoffset-1+((i-1)*8))+8
-			line(p1gridlinex, gridtop-8, p1gridlinex, 126, 13)
-
 			local p2gridlinex = (p2gridoffset-1+((i-1)*8))+8
-			line(p2gridlinex, gridtop-8, p2gridlinex, 126, 13)
+
+			if isdebug==1 then
+				line(p1gridlinex, gridtop-8, p1gridlinex, 126, 13)
+				line(p2gridlinex, gridtop-8, p2gridlinex, 126, 13)
+			end
 
 			for j=1,gridheight,1 do
 				
 				local gridliney = (gridtop+((j-1)*8))+8
-				line(p1gridoffset, gridliney, p1gridend-1, gridliney)
-				line(p2gridoffset, gridliney, p2gridend-1, gridliney)
+
+				if isdebug==1 then
+					line(p1gridoffset, gridliney, p1gridend-1, gridliney)
+					line(p2gridoffset, gridliney, p2gridend-1, gridliney)
+				end
 
 				p1spr=16
 				p2spr=16
