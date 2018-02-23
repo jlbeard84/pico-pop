@@ -24,7 +24,8 @@ p2gridend=127
 b1xgrid, b1ygrid, b2xgrid, b2ygrid = 0,0,0,0
 
 --orientation:1=horizontal-12,2=vertical-21,3=horizontal=21,4=vertical-12
-p1block1x, p1block1y, p1block2x, p1block2y, p1block1, p1block2, p1orientation, p1timer = 0,0,0,0,0,0,1,0
+p1block1x, p1block1y, p1block2x, p1block2y, p1block1, p1block2, p1nextblock1, p1nextblock2, p1orientation, p1timer = 0,0,0,0,0,0,0,0,1,0
+p1blockempty=true
 
 --picostates:0=none,1=red,2=green,3=blue,4=yellow,5=pink
 picostate1spr=11
@@ -36,6 +37,9 @@ picostate5spr=1
 function _init()
 
 	if gamestate==1 then
+		p1nextblock1=flr(rnd(5))+1
+		p1nextblock2=flr(rnd(5))+1
+
 		for i=1,gridwidth,1 do
 		
 			p1grid[i]={}
@@ -84,16 +88,18 @@ function _update60()
 			p1timer=0
 		end
 
-		if p1block1==0 then
-			--get next blocks
-			p1block1=flr(rnd(5))+1
-			p1block2=flr(rnd(5))+1
+		if p1blockempty==true then
+			p1block1=p1nextblock1
+			p1block2=p1nextblock2
+			p1nextblock1=flr(rnd(5))+1
+			p1nextblock2=flr(rnd(5))+1
 			p1block1x=1
 			p1block2x=p1block1x+8
 			p1block1y=30
 			p1block2y=30
 			p1orientation=1
 			p1timer=0
+			p1blockempty=false
 		end
 
 		p1timer+=1
@@ -185,11 +191,11 @@ function _update60()
 		if b1ygrid==gridheight or b2ygrid==gridheight then
 			insertintotable(1, b1xgrid, b1ygrid, p1block1)
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
-			p1block1=0
+			p1blockempty=true
 		elseif collides(b1xgrid,  b1ygrid + 1, 1) or collides(b2xgrid, b2ygrid + 1, 1) then
 			insertintotable(1, b1xgrid, b1ygrid, p1block1)
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
-			p1block1=0
+			p1blockempty=true
 		end
 	end
 end
@@ -304,9 +310,14 @@ function _draw()
 
 		local p1s1=getsprite(p1block1)
 		local p1s2=getsprite(p1block2)
+		local p1n1=getsprite(p1nextblock1)
+		local p1n2=getsprite(p1nextblock2)
 
 		spr(p1s1, p1block1x, p1block1y)
 		spr(p1s2, p1block2x, p1block2y)
+
+		spr(p1n1, 56, 40)
+		spr(p1n2, 64, 40)
 	end
 
 	if isdebug==1 then
