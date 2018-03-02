@@ -188,16 +188,53 @@ function _update60()
 
 		hascollided = false
 
-		if b1ygrid==gridheight or b2ygrid==gridheight then
+		if b1ygrid==gridheight or b2ygrid==gridheight or collides(b1xgrid,  b1ygrid + 1, 1) or collides(b2xgrid, b2ygrid + 1, 1) then
 			insertintotable(1, b1xgrid, b1ygrid, p1block1)
 			insertintotable(1, b2xgrid, b2ygrid, p1block2)
 			p1blockempty=true
-		elseif collides(b1xgrid,  b1ygrid + 1, 1) or collides(b2xgrid, b2ygrid + 1, 1) then
-			insertintotable(1, b1xgrid, b1ygrid, p1block1)
-			insertintotable(1, b2xgrid, b2ygrid, p1block2)
-			p1blockempty=true
+
+			checkpops(p1grid, b1xgrid, b1ygrid)
+			checkpops(p1grid, b2xgrid, b2ygrid)
 		end
 	end
+end
+
+function handlepops(grid, x, y)
+	local basetype = grid[x][y]
+
+	if basetype > 0 then
+		local matchingpicos = {}
+		matchingpicos = checkpops(grid, x, y, basetype, matchingpicos)
+
+		if #matchingpicos > 4 then
+			--remove them
+		end
+	end
+end
+
+function checkpops(grid, x, y, basetype, matchingpicos) 
+
+	if x-1 >= 1 and grid[x-1][y] == basetype then
+		add(matchingpicos, {gx=x-1, gy=y})
+		matchingpicos = checkpops(grid, x-1, y, basetype, matchingpicos)
+	end
+
+	if x+1 <= gridwidth and grid[x+1][y] == basetype  then
+		add(matchingpicos, {gx=x+1, gy=y})
+		matchingpicos = checkpops(grid, x+1, y, basetype, matchingpicos)
+	end
+
+	if y-1 >= 1 and grid[x][y-1] == basetype then
+		add(matchingpicos, {gx=x, gy=y-1})
+		matchingpicos = checkpops(grid, x, y-1, basetype, matchingpicos)
+	end
+
+	if y+1 <= gridheight and grid[x][y+1] == basetype then
+		add(matchingpicos, {gx=x, gy=y+1})
+		matchingpicos = checkpops(grid, x, y+1, basetype, matchingpicos)
+	end
+
+	return matchingpicos
 end
 
 function collidesxy(xpos, ypos, gridnum)
